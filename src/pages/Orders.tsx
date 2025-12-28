@@ -3,34 +3,10 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { ShoppingBag, Clock, ChefHat, Truck, CheckCircle } from "lucide-react";
+import { useOrderStore, Order, OrderStatus } from "@/stores/orderStore";
+import { useUserStore } from "@/stores/userStore";
 
-// Mock orders data - will be replaced with backend
-const MOCK_ORDERS = [
-  {
-    id: "order_1",
-    items: [
-      { name: "Osh (Palov)", quantity: 2, price: 35000 },
-      { name: "Somsa", quantity: 3, price: 15000 },
-    ],
-    totalPrice: 115000,
-    status: "delivered",
-    address: "Toshkent, Chilonzor 7",
-    createdAt: "2024-01-15T12:30:00Z",
-  },
-  {
-    id: "order_2",
-    items: [
-      { name: "Lag'mon", quantity: 1, price: 28000 },
-      { name: "Manti", quantity: 1, price: 25000 },
-    ],
-    totalPrice: 53000,
-    status: "preparing",
-    address: "Toshkent, Sergeli 5",
-    createdAt: "2024-01-15T14:00:00Z",
-  },
-];
-
-const STATUS_CONFIG = {
+const STATUS_CONFIG: Record<OrderStatus, { label: string; icon: typeof Clock; color: string }> = {
   pending: {
     label: "Qabul qilindi",
     icon: Clock,
@@ -54,11 +30,11 @@ const STATUS_CONFIG = {
 };
 
 interface OrderCardProps {
-  order: typeof MOCK_ORDERS[0];
+  order: Order;
 }
 
 function OrderCard({ order }: OrderCardProps) {
-  const status = STATUS_CONFIG[order.status as keyof typeof STATUS_CONFIG];
+  const status = STATUS_CONFIG[order.status];
   const StatusIcon = status.icon;
   const date = new Date(order.createdAt).toLocaleDateString("uz-UZ", {
     day: "numeric",
@@ -105,9 +81,15 @@ function OrderCard({ order }: OrderCardProps) {
 
 export default function Orders() {
   const navigate = useNavigate();
-  const orders = MOCK_ORDERS; // Will be replaced with real data
+  const { user } = useUserStore();
+  const { getOrdersByPhone } = useOrderStore();
+  
+  const orders = user?.phone ? getOrdersByPhone(user.phone) : [];
+  const sortedOrders = [...orders].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
 
-  if (orders.length === 0) {
+  if (sortedOrders.length === 0) {
     return (
       <div className="min-h-screen bg-background">
         <PageHeader title="Buyurtmalarim" />
@@ -137,7 +119,7 @@ export default function Orders() {
       
       <PageContainer>
         <div className="space-y-4">
-          {orders.map((order, index) => (
+          {sortedOrders.map((order, index) => (
             <div key={order.id} style={{ animationDelay: `${index * 0.1}s` }}>
               <OrderCard order={order} />
             </div>
