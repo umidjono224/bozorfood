@@ -3,18 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { useAdminStore } from "@/stores/adminStore";
+import { useOrderStore } from "@/stores/orderStore";
 import { ShoppingBag, Calendar, TrendingUp, Award } from "lucide-react";
-
-// Mock stats - will be replaced with backend
-const MOCK_STATS = {
-  totalOrders: 156,
-  todayOrders: 12,
-  totalRevenue: 15680000,
-  topFood: {
-    name: "Osh (Palov)",
-    count: 89,
-  },
-};
 
 interface StatCardProps {
   icon: React.ElementType;
@@ -44,6 +34,7 @@ function StatCard({ icon: Icon, label, value, subtitle, color }: StatCardProps) 
 export default function AdminStats() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAdminStore();
+  const { getStats } = useOrderStore();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -51,7 +42,7 @@ export default function AdminStats() {
     }
   }, [isAuthenticated, navigate]);
 
-  const stats = MOCK_STATS;
+  const stats = getStats();
 
   return (
     <div className="min-h-screen bg-background">
@@ -75,25 +66,26 @@ export default function AdminStats() {
           <StatCard
             icon={TrendingUp}
             label="Umumiy daromad"
-            value={`${(stats.totalRevenue / 1000000).toFixed(1)}M`}
+            value={stats.totalRevenue > 0 ? `${(stats.totalRevenue / 1000).toFixed(0)}K` : "0"}
             subtitle="so'm"
             color="bg-success/10 text-success"
           />
           <StatCard
             icon={Award}
             label="Eng mashhur"
-            value={stats.topFood.count}
-            subtitle={stats.topFood.name}
+            value={stats.topFood?.count || 0}
+            subtitle={stats.topFood?.name || "—"}
             color="bg-warning/10 text-warning"
           />
         </div>
 
-        {/* Info */}
-        <div className="mt-8 bg-accent rounded-xl p-4">
-          <p className="text-sm text-center text-accent-foreground">
-            📊 Statistika har kuni yangilanadi
-          </p>
-        </div>
+        {stats.totalOrders === 0 && (
+          <div className="mt-8 bg-accent rounded-xl p-4">
+            <p className="text-sm text-center text-accent-foreground">
+              📊 Buyurtmalar kelib tushganda statistika ko'rsatiladi
+            </p>
+          </div>
+        )}
       </PageContainer>
     </div>
   );

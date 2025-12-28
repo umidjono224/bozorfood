@@ -1,53 +1,12 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Button } from "@/components/ui/button";
 import { useAdminStore } from "@/stores/adminStore";
+import { useOrderStore, OrderStatus } from "@/stores/orderStore";
 import { useToast } from "@/hooks/use-toast";
 import { Clock, ChefHat, Truck, CheckCircle, Phone, MapPin } from "lucide-react";
-
-// Mock orders data - will be replaced with backend
-const INITIAL_ORDERS = [
-  {
-    id: "order_1",
-    phone: "+998901234567",
-    items: [
-      { name: "Osh (Palov)", quantity: 2, price: 35000 },
-      { name: "Somsa", quantity: 3, price: 15000 },
-    ],
-    totalPrice: 115000,
-    status: "pending",
-    address: "Toshkent, Chilonzor 7, 15-uy",
-    comment: "Iltimos, ziravorni kam qiling",
-    createdAt: "2024-01-15T12:30:00Z",
-  },
-  {
-    id: "order_2",
-    phone: "+998909876543",
-    items: [
-      { name: "Lag'mon", quantity: 1, price: 28000 },
-      { name: "Manti", quantity: 1, price: 25000 },
-    ],
-    totalPrice: 53000,
-    status: "preparing",
-    address: "Toshkent, Sergeli 5, 42-xonadon",
-    createdAt: "2024-01-15T14:00:00Z",
-  },
-  {
-    id: "order_3",
-    phone: "+998901112233",
-    items: [
-      { name: "Shashlik", quantity: 2, price: 45000 },
-    ],
-    totalPrice: 90000,
-    status: "delivering",
-    address: "Toshkent, Yunusobod 4",
-    createdAt: "2024-01-15T15:30:00Z",
-  },
-];
-
-type OrderStatus = "pending" | "preparing" | "delivering" | "delivered";
 
 const STATUS_CONFIG: Record<OrderStatus, { label: string; icon: typeof Clock; color: string }> = {
   pending: {
@@ -74,22 +33,11 @@ const STATUS_CONFIG: Record<OrderStatus, { label: string; icon: typeof Clock; co
 
 const STATUS_ORDER: OrderStatus[] = ["pending", "preparing", "delivering", "delivered"];
 
-interface Order {
-  id: string;
-  phone: string;
-  items: { name: string; quantity: number; price: number }[];
-  totalPrice: number;
-  status: OrderStatus;
-  address: string;
-  comment?: string;
-  createdAt: string;
-}
-
 export default function AdminOrders() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isAuthenticated } = useAdminStore();
-  const [orders, setOrders] = useState<Order[]>(INITIAL_ORDERS as Order[]);
+  const { orders, updateOrderStatus } = useOrderStore();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -97,12 +45,8 @@ export default function AdminOrders() {
     }
   }, [isAuthenticated, navigate]);
 
-  const updateStatus = (orderId: string, newStatus: OrderStatus) => {
-    setOrders(
-      orders.map((order) =>
-        order.id === orderId ? { ...order, status: newStatus } : order
-      )
-    );
+  const handleUpdateStatus = (orderId: string, newStatus: OrderStatus) => {
+    updateOrderStatus(orderId, newStatus);
     toast({
       title: "Yangilandi",
       description: `Holat: ${STATUS_CONFIG[newStatus].label}`,
@@ -209,7 +153,7 @@ export default function AdminOrders() {
                     <Button
                       size="sm"
                       className="w-full"
-                      onClick={() => updateStatus(order.id, nextStatus)}
+                      onClick={() => handleUpdateStatus(order.id, nextStatus)}
                     >
                       {STATUS_CONFIG[nextStatus].label} ga o'tkazish
                     </Button>

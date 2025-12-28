@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useCartStore } from "@/stores/cartStore";
 import { useUserStore } from "@/stores/userStore";
+import { useOrderStore } from "@/stores/orderStore";
 import { useToast } from "@/hooks/use-toast";
 import { MapPin, MessageSquare, Minus, Plus, Trash2, AlertCircle } from "lucide-react";
 
@@ -15,6 +16,7 @@ export default function Checkout() {
   const { toast } = useToast();
   const { user } = useUserStore();
   const { items, updateQuantity, removeItem, clearCart, getTotalPrice } = useCartStore();
+  const { addOrder } = useOrderStore();
   const [address, setAddress] = useState("");
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -44,25 +46,20 @@ export default function Checkout() {
 
     setIsSubmitting(true);
 
-    // Simulate order submission - will be replaced with backend
     try {
-      // Mock order creation
-      const order = {
-        id: `order_${Date.now()}`,
-        userId: user?.id,
-        phone: user?.phone,
-        items: items,
+      addOrder({
+        phone: user?.phone || "",
+        items: items.map((item) => ({
+          id: item.id,
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          image: item.image,
+        })),
         totalPrice,
         address: address.trim(),
         comment: comment.trim() || undefined,
-        status: "pending",
-        createdAt: new Date().toISOString(),
-      };
-
-      console.log("Order created:", order);
-
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      });
 
       clearCart();
 
