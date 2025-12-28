@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { useAdminStore } from "@/stores/adminStore";
-import { useOrderStore } from "@/stores/orderStore";
-import { ShoppingBag, Calendar, TrendingUp, Award } from "lucide-react";
+import { useOrderStats } from "@/hooks/useOrders";
+import { ShoppingBag, Calendar, TrendingUp, Award, Loader2 } from "lucide-react";
 
 interface StatCardProps {
   icon: React.ElementType;
@@ -34,7 +34,7 @@ function StatCard({ icon: Icon, label, value, subtitle, color }: StatCardProps) 
 export default function AdminStats() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAdminStore();
-  const { getStats } = useOrderStore();
+  const { data: stats, isLoading } = useOrderStats();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -42,7 +42,16 @@ export default function AdminStats() {
     }
   }, [isAuthenticated, navigate]);
 
-  const stats = getStats();
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <PageHeader title="Statistika" />
+        <PageContainer className="flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </PageContainer>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -53,33 +62,33 @@ export default function AdminStats() {
           <StatCard
             icon={ShoppingBag}
             label="Jami buyurtmalar"
-            value={stats.totalOrders}
+            value={stats?.totalOrders || 0}
             color="bg-primary/10 text-primary"
           />
           <StatCard
             icon={Calendar}
             label="Bugungi"
-            value={stats.todayOrders}
+            value={stats?.todayOrders || 0}
             subtitle="buyurtma"
             color="bg-accent text-accent-foreground"
           />
           <StatCard
             icon={TrendingUp}
             label="Umumiy daromad"
-            value={stats.totalRevenue > 0 ? `${(stats.totalRevenue / 1000).toFixed(0)}K` : "0"}
+            value={stats && stats.totalRevenue > 0 ? `${(stats.totalRevenue / 1000).toFixed(0)}K` : "0"}
             subtitle="so'm"
             color="bg-success/10 text-success"
           />
           <StatCard
             icon={Award}
             label="Eng mashhur"
-            value={stats.topFood?.count || 0}
-            subtitle={stats.topFood?.name || "—"}
+            value={stats?.topFood?.count || 0}
+            subtitle={stats?.topFood?.name || "—"}
             color="bg-warning/10 text-warning"
           />
         </div>
 
-        {stats.totalOrders === 0 && (
+        {stats?.totalOrders === 0 && (
           <div className="mt-8 bg-accent rounded-xl p-4">
             <p className="text-sm text-center text-accent-foreground">
               📊 Buyurtmalar kelib tushganda statistika ko'rsatiladi
