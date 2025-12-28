@@ -7,19 +7,16 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useCartStore } from "@/stores/cartStore";
 import { useUserStore } from "@/stores/userStore";
-import { useOrderStore } from "@/stores/orderStore";
-import { useToast } from "@/hooks/use-toast";
+import { useCreateOrder } from "@/hooks/useOrders";
 import { MapPin, MessageSquare, Minus, Plus, Trash2, AlertCircle } from "lucide-react";
 
 export default function Checkout() {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const { user } = useUserStore();
   const { items, updateQuantity, removeItem, clearCart, getTotalPrice } = useCartStore();
-  const { addOrder } = useOrderStore();
+  const createOrder = useCreateOrder();
   const [address, setAddress] = useState("");
   const [comment, setComment] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const totalPrice = getTotalPrice();
 
@@ -27,27 +24,15 @@ export default function Checkout() {
     e.preventDefault();
 
     if (!address.trim()) {
-      toast({
-        title: "Xatolik",
-        description: "Yetkazib berish manzilini kiriting",
-        variant: "destructive",
-      });
       return;
     }
 
     if (items.length === 0) {
-      toast({
-        title: "Xatolik",
-        description: "Savatcha bo'sh",
-        variant: "destructive",
-      });
       return;
     }
 
-    setIsSubmitting(true);
-
-    try {
-      addOrder({
+    createOrder.mutate(
+      {
         phone: user?.phone || "",
         items: items.map((item) => ({
           id: item.id,
@@ -56,28 +41,17 @@ export default function Checkout() {
           price: item.price,
           image: item.image,
         })),
-        totalPrice,
+        total_price: totalPrice,
         address: address.trim(),
         comment: comment.trim() || undefined,
-      });
-
-      clearCart();
-
-      toast({
-        title: "Buyurtma qabul qilindi!",
-        description: "Tez orada siz bilan bog'lanamiz",
-      });
-
-      navigate("/orders");
-    } catch (error) {
-      toast({
-        title: "Xatolik",
-        description: "Buyurtmani yuborishda xatolik yuz berdi",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+      },
+      {
+        onSuccess: () => {
+          clearCart();
+          navigate("/orders");
+        },
+      }
+    );
   };
 
   if (items.length === 0) {
@@ -211,9 +185,9 @@ export default function Checkout() {
           size="lg"
           className="w-full"
           onClick={handleSubmit}
-          disabled={isSubmitting}
+          disabled={createOrder.isPending || !address.trim()}
         >
-          {isSubmitting ? "Yuborilmoqda..." : "Buyurtmani tasdiqlash"}
+          {createOrder.isPending ? "Yuborilmoqda..." : "Buyurtmani tasdiqlash"}
         </Button>
       </div>
     </div>

@@ -2,8 +2,8 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { ShoppingBag, Clock, ChefHat, Truck, CheckCircle } from "lucide-react";
-import { useOrderStore, Order, OrderStatus } from "@/stores/orderStore";
+import { ShoppingBag, Clock, ChefHat, Truck, CheckCircle, Loader2 } from "lucide-react";
+import { useOrdersByPhone, Order, OrderStatus } from "@/hooks/useOrders";
 import { useUserStore } from "@/stores/userStore";
 
 const STATUS_CONFIG: Record<OrderStatus, { label: string; icon: typeof Clock; color: string }> = {
@@ -36,7 +36,7 @@ interface OrderCardProps {
 function OrderCard({ order }: OrderCardProps) {
   const status = STATUS_CONFIG[order.status];
   const StatusIcon = status.icon;
-  const date = new Date(order.createdAt).toLocaleDateString("uz-UZ", {
+  const date = new Date(order.created_at).toLocaleDateString("uz-UZ", {
     day: "numeric",
     month: "short",
     hour: "2-digit",
@@ -70,7 +70,7 @@ function OrderCard({ order }: OrderCardProps) {
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground">Jami:</span>
           <span className="font-bold text-foreground">
-            {order.totalPrice.toLocaleString()} so'm
+            {order.total_price.toLocaleString()} so'm
           </span>
         </div>
         <p className="text-xs text-muted-foreground mt-1">📍 {order.address}</p>
@@ -82,14 +82,20 @@ function OrderCard({ order }: OrderCardProps) {
 export default function Orders() {
   const navigate = useNavigate();
   const { user } = useUserStore();
-  const { getOrdersByPhone } = useOrderStore();
-  
-  const orders = user?.phone ? getOrdersByPhone(user.phone) : [];
-  const sortedOrders = [...orders].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
+  const { data: orders = [], isLoading } = useOrdersByPhone(user?.phone);
 
-  if (sortedOrders.length === 0) {
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <PageHeader title="Buyurtmalarim" />
+        <PageContainer className="flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </PageContainer>
+      </div>
+    );
+  }
+
+  if (orders.length === 0) {
     return (
       <div className="min-h-screen bg-background">
         <PageHeader title="Buyurtmalarim" />
@@ -119,7 +125,7 @@ export default function Orders() {
       
       <PageContainer>
         <div className="space-y-4">
-          {sortedOrders.map((order, index) => (
+          {orders.map((order, index) => (
             <div key={order.id} style={{ animationDelay: `${index * 0.1}s` }}>
               <OrderCard order={order} />
             </div>

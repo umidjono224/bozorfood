@@ -4,9 +4,9 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Button } from "@/components/ui/button";
 import { useAdminStore } from "@/stores/adminStore";
-import { useOrderStore, OrderStatus } from "@/stores/orderStore";
+import { useOrders, useUpdateOrderStatus, OrderStatus } from "@/hooks/useOrders";
 import { useToast } from "@/hooks/use-toast";
-import { Clock, ChefHat, Truck, CheckCircle, Phone, MapPin } from "lucide-react";
+import { Clock, ChefHat, Truck, CheckCircle, Phone, MapPin, Loader2 } from "lucide-react";
 
 const STATUS_CONFIG: Record<OrderStatus, { label: string; icon: typeof Clock; color: string }> = {
   pending: {
@@ -37,7 +37,8 @@ export default function AdminOrders() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isAuthenticated } = useAdminStore();
-  const { orders, updateOrderStatus } = useOrderStore();
+  const { data: orders = [], isLoading } = useOrders();
+  const updateStatus = useUpdateOrderStatus();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -46,11 +47,17 @@ export default function AdminOrders() {
   }, [isAuthenticated, navigate]);
 
   const handleUpdateStatus = (orderId: string, newStatus: OrderStatus) => {
-    updateOrderStatus(orderId, newStatus);
-    toast({
-      title: "Yangilandi",
-      description: `Holat: ${STATUS_CONFIG[newStatus].label}`,
-    });
+    updateStatus.mutate(
+      { orderId, status: newStatus },
+      {
+        onSuccess: () => {
+          toast({
+            title: "Yangilandi",
+            description: `Holat: ${STATUS_CONFIG[newStatus].label}`,
+          });
+        },
+      }
+    );
   };
 
   const getNextStatus = (current: OrderStatus): OrderStatus | null => {
@@ -67,8 +74,19 @@ export default function AdminOrders() {
     const bActive = b.status !== "delivered";
     if (aActive && !bActive) return -1;
     if (!aActive && bActive) return 1;
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
   });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <PageHeader title="Buyurtmalar" />
+        <PageContainer className="flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </PageContainer>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -80,7 +98,7 @@ export default function AdminOrders() {
             const status = STATUS_CONFIG[order.status];
             const StatusIcon = status.icon;
             const nextStatus = getNextStatus(order.status);
-            const date = new Date(order.createdAt).toLocaleDateString("uz-UZ", {
+            const date = new Date(order.created_at).toLocaleDateString("uz-UZ", {
               day: "numeric",
               month: "short",
               hour: "2-digit",
@@ -133,7 +151,7 @@ export default function AdminOrders() {
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">Jami:</span>
                     <span className="font-bold text-foreground">
-                      {order.totalPrice.toLocaleString()} so'm
+                      {order.total_price.toLocaleString()} so'm
                     </span>
                   </div>
                   <p className="text-sm text-muted-foreground flex items-start gap-1">
@@ -154,6 +172,7 @@ export default function AdminOrders() {
                       size="sm"
                       className="w-full"
                       onClick={() => handleUpdateStatus(order.id, nextStatus)}
+                      disabled={updateStatus.isPending}
                     >
                       {STATUS_CONFIG[nextStatus].label} ga o'tkazish
                     </Button>
