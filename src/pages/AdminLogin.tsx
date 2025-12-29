@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PageContainer } from "@/components/layout/PageContainer";
@@ -16,9 +16,15 @@ export default function AdminLogin() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Redirect if already authenticated
+  // Redirect if already authenticated - use useEffect to avoid render-time navigation
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/admin/panel", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
+  // Show nothing while redirecting
   if (isAuthenticated) {
-    navigate("/admin/panel", { replace: true });
     return null;
   }
 
