@@ -1,1 +1,4 @@
 project_id = "sosazqqirkljsohclawt"
+
+[functions.cleanup-orders]
+verify_jwt = false
