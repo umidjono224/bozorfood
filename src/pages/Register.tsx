@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useUserStore } from "@/stores/userStore";
-import { Phone, User, ChefHat } from "lucide-react";
+import { Phone, User, ChefHat, Loader2 } from "lucide-react";
+import { checkPhoneExists, registerUser } from "@/hooks/useRegistration";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -11,15 +12,27 @@ export default function Register() {
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true);
 
     // Basic phone validation for Uzbekistan numbers
     const cleanPhone = phone.replace(/\D/g, "");
     if (cleanPhone.length < 9) {
       setError("Telefon raqamni to'liq kiriting");
+      setIsLoading(false);
+      return;
+    }
+
+    // Check if phone already exists and register
+    const result = await registerUser(cleanPhone, name.trim() || undefined);
+    
+    if (!result.success) {
+      setError(result.error || "Xatolik yuz berdi");
+      setIsLoading(false);
       return;
     }
 
@@ -32,6 +45,7 @@ export default function Register() {
       name: name.trim() || undefined,
     });
 
+    setIsLoading(false);
     navigate("/");
   };
 
@@ -87,8 +101,15 @@ export default function Register() {
             <p className="text-destructive text-sm text-center">{error}</p>
           )}
 
-          <Button type="submit" size="lg" className="w-full mt-6">
-            Davom etish
+          <Button type="submit" size="lg" className="w-full mt-6" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Tekshirilmoqda...
+              </>
+            ) : (
+              "Davom etish"
+            )}
           </Button>
         </form>
       </div>
