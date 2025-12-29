@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PageContainer } from "@/components/layout/PageContainer";
@@ -7,34 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAdminStore } from "@/stores/adminStore";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, Image, X } from "lucide-react";
-import { useEffect } from "react";
-
-// Mock foods data - will be replaced with backend
-const INITIAL_FOODS = [
-  {
-    id: "1",
-    name: "Osh (Palov)",
-    description: "An'anaviy o'zbek oshi, mol go'shti bilan",
-    price: 35000,
-    image: "https://images.unsplash.com/photo-1630409351217-bc4fa6422075?w=400&h=300&fit=crop",
-  },
-  {
-    id: "2",
-    name: "Lag'mon",
-    description: "Qo'lda tayyorlangan lag'mon, sabzavotlar bilan",
-    price: 28000,
-    image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&h=300&fit=crop",
-  },
-];
-
-interface Food {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  image: string;
-}
+import { Plus, Pencil, Trash2, Image } from "lucide-react";
+import { FOODS, Food } from "@/data/foods";
 
 interface FoodFormProps {
   food?: Food;
@@ -138,7 +112,7 @@ export default function AdminFoods() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isAuthenticated } = useAdminStore();
-  const [foods, setFoods] = useState<Food[]>(INITIAL_FOODS);
+  const [foods, setFoods] = useState<Food[]>(FOODS);
   const [editingFood, setEditingFood] = useState<Food | null>(null);
   const [isAdding, setIsAdding] = useState(false);
 
