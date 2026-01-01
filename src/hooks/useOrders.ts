@@ -146,6 +146,12 @@ export function useUpdateOrderStatus() {
   });
 }
 
+// Helper to get the start of the current month
+function getMonthStart(): Date {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), 1);
+}
+
 export function useOrderStats() {
   return useQuery({
     queryKey: ['orders', 'stats'],
@@ -158,14 +164,21 @@ export function useOrderStats() {
       
       const orders = (data || []).map(transformOrder);
       const today = new Date().toDateString();
+      const monthStart = getMonthStart();
       
       const todayOrders = orders.filter(
         (order) => new Date(order.created_at).toDateString() === today
       ).length;
       
-      const totalRevenue = orders.reduce((sum, order) => sum + order.total_price, 0);
+      // Monthly orders - filters orders from the 1st of current month
+      const monthlyOrders = orders.filter(
+        (order) => new Date(order.created_at) >= monthStart
+      );
       
-      // Calculate top food
+      const totalRevenue = orders.reduce((sum, order) => sum + order.total_price, 0);
+      const monthlyRevenue = monthlyOrders.reduce((sum, order) => sum + order.total_price, 0);
+      
+      // Calculate top food (all time)
       const foodCounts: Record<string, number> = {};
       orders.forEach((order) => {
         order.items.forEach((item) => {
@@ -179,12 +192,32 @@ export function useOrderStats() {
           topFood = { name, count };
         }
       });
+
+      // Calculate top food (monthly)
+      const monthlyFoodCounts: Record<string, number> = {};
+      monthlyOrders.forEach((order) => {
+        order.items.forEach((item) => {
+          monthlyFoodCounts[item.name] = (monthlyFoodCounts[item.name] || 0) + item.quantity;
+        });
+      });
+      
+      let monthlyTopFood: { name: string; count: number } | null = null;
+      Object.entries(monthlyFoodCounts).forEach(([name, count]) => {
+        if (!monthlyTopFood || count > monthlyTopFood.count) {
+          monthlyTopFood = { name, count };
+        }
+      });
       
       return {
         totalOrders: orders.length,
         todayOrders,
         totalRevenue,
         topFood,
+        // Monthly stats (resets on 1st of each month)
+        monthlyOrders: monthlyOrders.length,
+        monthlyRevenue,
+        monthlyTopFood,
+        monthStart: monthStart.toISOString(),
       };
     },
   });
