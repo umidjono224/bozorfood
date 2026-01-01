@@ -4,7 +4,8 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { useAdminStore } from "@/stores/adminStore";
 import { useOrderStats } from "@/hooks/useOrders";
-import { ShoppingBag, Calendar, TrendingUp, Award, Loader2 } from "lucide-react";
+import { ShoppingBag, Calendar, TrendingUp, Award, Loader2, CalendarDays } from "lucide-react";
+import { format } from "date-fns";
 
 interface StatCardProps {
   icon: React.ElementType;
@@ -42,6 +43,10 @@ export default function AdminStats() {
     }
   }, [isAuthenticated, navigate]);
 
+  const monthName = stats?.monthStart 
+    ? format(new Date(stats.monthStart), "MMMM yyyy")
+    : format(new Date(), "MMMM yyyy");
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
@@ -58,6 +63,8 @@ export default function AdminStats() {
       <PageHeader title="Statistika" />
       
       <PageContainer>
+        {/* All-time stats */}
+        <h2 className="text-lg font-semibold text-foreground mb-3">Umumiy statistika</h2>
         <div className="grid grid-cols-2 gap-4">
           <StatCard
             icon={ShoppingBag}
@@ -85,6 +92,38 @@ export default function AdminStats() {
             value={stats?.topFood?.count || 0}
             subtitle={stats?.topFood?.name || "—"}
             color="bg-warning/10 text-warning"
+          />
+        </div>
+
+        {/* Monthly stats */}
+        <h2 className="text-lg font-semibold text-foreground mt-8 mb-3 flex items-center gap-2">
+          <CalendarDays className="w-5 h-5" />
+          Oylik statistika
+          <span className="text-sm font-normal text-muted-foreground">({monthName})</span>
+        </h2>
+        <p className="text-xs text-muted-foreground mb-3">
+          Har oyning 1-sanasida avtomatik yangilanadi
+        </p>
+        <div className="grid grid-cols-2 gap-4">
+          <StatCard
+            icon={ShoppingBag}
+            label="Oylik buyurtmalar"
+            value={stats?.monthlyOrders || 0}
+            color="bg-blue-500/10 text-blue-500"
+          />
+          <StatCard
+            icon={TrendingUp}
+            label="Oylik daromad"
+            value={stats && stats.monthlyRevenue > 0 ? `${(stats.monthlyRevenue / 1000).toFixed(0)}K` : "0"}
+            subtitle="so'm"
+            color="bg-emerald-500/10 text-emerald-500"
+          />
+          <StatCard
+            icon={Award}
+            label="Oylik mashhur"
+            value={stats?.monthlyTopFood?.count || 0}
+            subtitle={stats?.monthlyTopFood?.name || "—"}
+            color="bg-purple-500/10 text-purple-500"
           />
         </div>
 
