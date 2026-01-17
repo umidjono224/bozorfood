@@ -27,21 +27,18 @@ export default function AdminPanel() {
       label: "Taomlar boshqaruvi",
       description: "Taomlarni qo'shish va tahrirlash",
       path: "/admin/foods",
-      color: "text-primary",
     },
     {
       icon: ShoppingBag,
       label: "Buyurtmalar",
       description: "Buyurtmalarni ko'rish va boshqarish",
       path: "/admin/orders",
-      color: "text-accent-foreground",
     },
     {
       icon: BarChart3,
       label: "Statistika",
       description: "Savdo statistikasi",
       path: "/admin/stats",
-      color: "text-success",
     },
   ];
 
@@ -50,27 +47,28 @@ export default function AdminPanel() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <PageHeader title="Admin Panel" showHome={false} />
+    <div className="min-h-screen bg-[hsl(var(--admin))]">
+      <PageHeader title="Boshqaruv" showHome={false} />
       
       <PageContainer>
         <div className="space-y-3 mb-8">
           {menuItems.map((item, index) => (
             <Button
               key={item.path}
-              variant="menu"
-              size="menu"
+              variant="ghost"
               onClick={() => navigate(item.path)}
-              className="animate-fade-up"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              className="w-full justify-start h-auto py-4 px-4 rounded-2xl bg-[hsl(var(--admin-accent))] hover:bg-[hsl(var(--admin-muted))] animate-fade-up touch-feedback"
+              style={{ animationDelay: `${index * 0.08}s` }}
             >
               <div className="flex items-center gap-4 w-full">
-                <div className={`p-3 rounded-xl bg-accent ${item.color}`}>
-                  <item.icon className="w-6 h-6" />
+                <div className="p-3 rounded-xl bg-[hsl(var(--admin-muted))]">
+                  <item.icon className="w-6 h-6 text-[hsl(var(--admin-foreground))]" />
                 </div>
                 <div className="flex-1 text-left">
-                  <div className="font-semibold text-foreground">{item.label}</div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="font-semibold text-[hsl(var(--admin-foreground))]">
+                    {item.label}
+                  </div>
+                  <div className="text-sm text-[hsl(var(--admin-foreground)/0.6)]">
                     {item.description}
                   </div>
                 </div>
@@ -82,7 +80,7 @@ export default function AdminPanel() {
         <Button
           variant="outline"
           size="lg"
-          className="w-full text-destructive border-destructive/50 hover:bg-destructive/10"
+          className="w-full h-14 rounded-xl text-destructive border-destructive/30 hover:bg-destructive/10 bg-transparent touch-feedback"
           onClick={handleLogout}
         >
           <LogOut className="w-5 h-5 mr-2" />

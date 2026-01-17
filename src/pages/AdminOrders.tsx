@@ -79,7 +79,7 @@ export default function AdminOrders() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-[hsl(var(--admin))]">
         <PageHeader title="Buyurtmalar" />
         <PageContainer className="flex items-center justify-center min-h-[60vh]">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -89,7 +89,7 @@ export default function AdminOrders() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[hsl(var(--admin))]">
       <PageHeader title="Buyurtmalar" />
       
       <PageContainer>
@@ -108,11 +108,10 @@ export default function AdminOrders() {
             return (
               <div
                 key={order.id}
-                className="bg-card rounded-xl p-4 border border-border shadow-card animate-fade-in"
+                className="bg-[hsl(var(--admin-accent))] rounded-2xl p-4 border border-[hsl(var(--admin-muted))] shadow-card animate-fade-in"
               >
-                {/* Header */}
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm text-muted-foreground">{date}</span>
+                  <span className="text-sm text-[hsl(var(--admin-foreground)/0.6)]">{date}</span>
                   <div
                     className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${status.color}`}
                   >
@@ -132,45 +131,42 @@ export default function AdminOrders() {
                   </a>
                 </div>
 
-                {/* Items */}
                 <div className="space-y-1.5 mb-3">
                   {order.items.map((item, index) => (
                     <div key={index} className="flex items-center justify-between text-sm">
-                      <span className="text-foreground">
+                      <span className="text-[hsl(var(--admin-foreground))]">
                         {item.name} × {item.quantity}
                       </span>
-                      <span className="text-muted-foreground">
+                      <span className="text-[hsl(var(--admin-foreground)/0.6)]">
                         {(item.price * item.quantity).toLocaleString()} so'm
                       </span>
                     </div>
                   ))}
                 </div>
 
-                {/* Total & Address */}
-                <div className="pt-3 border-t border-border space-y-2">
+                <div className="pt-3 border-t border-[hsl(var(--admin-muted))] space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Jami:</span>
-                    <span className="font-bold text-foreground">
+                    <span className="text-sm text-[hsl(var(--admin-foreground)/0.6)]">Jami:</span>
+                    <span className="font-bold text-[hsl(var(--admin-foreground))]">
                       {order.total_price.toLocaleString()} so'm
                     </span>
                   </div>
-                  <p className="text-sm text-muted-foreground flex items-start gap-1">
+                  <p className="text-sm text-[hsl(var(--admin-foreground)/0.6)] flex items-start gap-1">
                     <MapPin className="w-4 h-4 shrink-0 mt-0.5" />
                     {order.address}
                   </p>
                   {order.comment && (
-                    <p className="text-sm text-muted-foreground italic">
+                    <p className="text-sm text-[hsl(var(--admin-foreground)/0.6)] italic">
                       💬 {order.comment}
                     </p>
                   )}
                 </div>
 
-                {/* Action */}
                 {nextStatus && (
                   <div className="mt-4">
                     <Button
                       size="sm"
-                      className="w-full"
+                      className="w-full h-11 rounded-xl touch-feedback"
                       onClick={() => handleUpdateStatus(order.id, nextStatus)}
                       disabled={updateStatus.isPending}
                     >
@@ -185,7 +181,7 @@ export default function AdminOrders() {
 
         {orders.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-muted-foreground">Buyurtmalar yo'q</p>
+            <p className="text-[hsl(var(--admin-foreground)/0.6)]">Buyurtmalar yo'q</p>
           </div>
         )}
       </PageContainer>

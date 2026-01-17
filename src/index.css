@@ -42,6 +42,12 @@
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
 
+    /* Admin theme - neutral/dark tones */
+    --admin: 220 13% 18%;
+    --admin-foreground: 220 13% 95%;
+    --admin-muted: 220 13% 30%;
+    --admin-accent: 220 13% 25%;
+
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
@@ -92,6 +98,11 @@
     --input: 20 14% 20%;
     --ring: 25 95% 53%;
 
+    --admin: 220 13% 12%;
+    --admin-foreground: 220 13% 95%;
+    --admin-muted: 220 13% 25%;
+    --admin-accent: 220 13% 20%;
+
     --gradient-primary: linear-gradient(135deg, hsl(25 95% 53%), hsl(35 95% 55%));
     --gradient-warm: linear-gradient(180deg, hsl(20 14% 8%) 0%, hsl(20 14% 10%) 100%);
     --gradient-card: linear-gradient(145deg, hsl(20 14% 12%) 0%, hsl(20 14% 14%) 100%);
@@ -122,6 +133,17 @@
   /* Mobile optimization */
   input, button, textarea, select {
     font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  /* Hide Lovable badge completely */
+  [data-lovable-badge],
+  .lovable-badge,
+  a[href*="lovable.dev"]:has(img),
+  div[style*="position: fixed"][style*="bottom"][style*="right"] > a[href*="lovable"] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
   }
 }
 
@@ -162,5 +184,56 @@
 
   .safe-top {
     padding-top: env(safe-area-inset-top, 0);
+  }
+
+  /* Admin theme utilities */
+  .admin-theme {
+    --background: var(--admin);
+    --foreground: var(--admin-foreground);
+    --muted: var(--admin-muted);
+    --accent: var(--admin-accent);
+  }
+
+  /* Micro-animation for quantity changes */
+  .quantity-pop {
+    animation: quantity-pop 0.2s ease-out;
+  }
+
+  @keyframes quantity-pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+
+  /* Cart button animation */
+  .cart-pulse {
+    animation: cart-pulse 0.3s ease-out;
+  }
+
+  @keyframes cart-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+  }
+
+  /* Slide up animation for sticky elements */
+  .slide-up-enter {
+    animation: slide-up-enter 0.3s ease-out;
+  }
+
+  @keyframes slide-up-enter {
+    from { 
+      opacity: 0;
+      transform: translateY(100%);
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Touch feedback */
+  .touch-feedback {
+    @apply transition-all duration-150 active:scale-[0.97] active:opacity-90;
   }
 }
