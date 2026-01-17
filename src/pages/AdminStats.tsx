@@ -17,16 +17,16 @@ interface StatCardProps {
 
 function StatCard({ icon: Icon, label, value, subtitle, color }: StatCardProps) {
   return (
-    <div className="bg-card rounded-xl p-5 border border-border shadow-card animate-fade-in">
+    <div className="bg-[hsl(var(--admin-accent))] rounded-2xl p-5 border border-[hsl(var(--admin-muted))] shadow-card animate-fade-in">
       <div className="flex items-start justify-between mb-3">
         <div className={`p-3 rounded-xl ${color}`}>
           <Icon className="w-6 h-6" />
         </div>
       </div>
-      <p className="text-sm text-muted-foreground mb-1">{label}</p>
-      <p className="text-2xl font-bold text-foreground">{value}</p>
+      <p className="text-sm text-[hsl(var(--admin-foreground)/0.6)] mb-1">{label}</p>
+      <p className="text-2xl font-bold text-[hsl(var(--admin-foreground))]">{value}</p>
       {subtitle && (
-        <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>
+        <p className="text-xs text-[hsl(var(--admin-foreground)/0.5)] mt-1">{subtitle}</p>
       )}
     </div>
   );
@@ -49,7 +49,7 @@ export default function AdminStats() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-[hsl(var(--admin))]">
         <PageHeader title="Statistika" />
         <PageContainer className="flex items-center justify-center min-h-[60vh]">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -59,12 +59,12 @@ export default function AdminStats() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[hsl(var(--admin))]">
       <PageHeader title="Statistika" />
       
       <PageContainer>
         {/* All-time stats */}
-        <h2 className="text-lg font-semibold text-foreground mb-3">Umumiy statistika</h2>
+        <h2 className="text-lg font-semibold text-[hsl(var(--admin-foreground))] mb-3">Umumiy statistika</h2>
         <div className="grid grid-cols-2 gap-4">
           <StatCard
             icon={ShoppingBag}
@@ -96,12 +96,12 @@ export default function AdminStats() {
         </div>
 
         {/* Monthly stats */}
-        <h2 className="text-lg font-semibold text-foreground mt-8 mb-3 flex items-center gap-2">
+        <h2 className="text-lg font-semibold text-[hsl(var(--admin-foreground))] mt-8 mb-3 flex items-center gap-2">
           <CalendarDays className="w-5 h-5" />
           Oylik statistika
-          <span className="text-sm font-normal text-muted-foreground">({monthName})</span>
+          <span className="text-sm font-normal text-[hsl(var(--admin-foreground)/0.6)]">({monthName})</span>
         </h2>
-        <p className="text-xs text-muted-foreground mb-3">
+        <p className="text-xs text-[hsl(var(--admin-foreground)/0.5)] mb-3">
           Har oyning 1-sanasida avtomatik yangilanadi
         </p>
         <div className="grid grid-cols-2 gap-4">
@@ -128,8 +128,8 @@ export default function AdminStats() {
         </div>
 
         {stats?.totalOrders === 0 && (
-          <div className="mt-8 bg-accent rounded-xl p-4">
-            <p className="text-sm text-center text-accent-foreground">
+          <div className="mt-8 bg-[hsl(var(--admin-accent))] rounded-2xl p-4">
+            <p className="text-sm text-center text-[hsl(var(--admin-foreground)/0.7)]">
               📊 Buyurtmalar kelib tushganda statistika ko'rsatiladi
             </p>
           </div>

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAdminStore } from "@/stores/adminStore";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, User, Lock } from "lucide-react";
+import { User, Lock } from "lucide-react";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -16,14 +16,12 @@ export default function AdminLogin() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Redirect if already authenticated - use useEffect to avoid render-time navigation
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/admin/panel", { replace: true });
     }
   }, [isAuthenticated, navigate]);
 
-  // Show nothing while redirecting
   if (isAuthenticated) {
     return null;
   }
@@ -32,7 +30,6 @@ export default function AdminLogin() {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     const success = login(username, password);
@@ -55,25 +52,26 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <PageHeader title="Admin" />
+    <div className="min-h-screen bg-[hsl(var(--admin))]">
+      <PageHeader title="Kirish" />
       
-      <PageContainer className="flex flex-col items-center justify-center min-h-[60vh]">
+      <PageContainer className="flex flex-col items-center justify-center min-h-[70vh]">
         <div className="w-full max-w-sm">
+          {/* Clean admin login - no hints about admin mode */}
           <div className="text-center mb-8">
-            <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-              <Shield className="w-8 h-8 text-muted-foreground" />
+            <div className="w-16 h-16 rounded-2xl bg-[hsl(var(--admin-accent))] flex items-center justify-center mx-auto mb-4">
+              <Lock className="w-7 h-7 text-[hsl(var(--admin-foreground))]" />
             </div>
-            <h2 className="text-xl font-bold text-foreground">Admin kirish</h2>
-            <p className="text-sm text-muted-foreground mt-1">
+            <h2 className="text-xl font-bold text-[hsl(var(--admin-foreground))]">Kirish</h2>
+            <p className="text-sm text-[hsl(var(--admin-foreground)/0.6)] mt-1">
               Login va parolni kiriting
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground flex items-center gap-2">
-                <User className="w-4 h-4 text-muted-foreground" />
+              <label className="text-sm font-medium text-[hsl(var(--admin-foreground))] flex items-center gap-2">
+                <User className="w-4 h-4 text-[hsl(var(--admin-foreground)/0.6)]" />
                 Login
               </label>
               <Input
@@ -82,12 +80,13 @@ export default function AdminLogin() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
+                className="h-12 rounded-xl bg-[hsl(var(--admin-accent))] border-[hsl(var(--admin-muted))] text-[hsl(var(--admin-foreground))] placeholder:text-[hsl(var(--admin-foreground)/0.4)]"
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground flex items-center gap-2">
-                <Lock className="w-4 h-4 text-muted-foreground" />
+              <label className="text-sm font-medium text-[hsl(var(--admin-foreground))] flex items-center gap-2">
+                <Lock className="w-4 h-4 text-[hsl(var(--admin-foreground)/0.6)]" />
                 Parol
               </label>
               <Input
@@ -96,13 +95,14 @@ export default function AdminLogin() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="h-12 rounded-xl bg-[hsl(var(--admin-accent))] border-[hsl(var(--admin-muted))] text-[hsl(var(--admin-foreground))] placeholder:text-[hsl(var(--admin-foreground)/0.4)]"
               />
             </div>
 
             <Button
               type="submit"
               size="lg"
-              className="w-full mt-6"
+              className="w-full mt-6 h-14 rounded-xl touch-feedback"
               disabled={isLoading}
             >
               {isLoading ? "Kirish..." : "Kirish"}

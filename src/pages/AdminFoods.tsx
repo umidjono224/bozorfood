@@ -33,43 +33,46 @@ function FoodForm({ food, onSave, onCancel }: FoodFormProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-background z-50 overflow-auto">
+    <div className="fixed inset-0 bg-[hsl(var(--admin))] z-50 overflow-auto">
       <PageHeader title={food ? "Taomni tahrirlash" : "Yangi taom"} showHome={false} />
       <PageContainer>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Taom nomi *</label>
+            <label className="text-sm font-medium text-[hsl(var(--admin-foreground))]">Taom nomi *</label>
             <Input
               placeholder="Masalan: Osh"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              className="h-12 rounded-xl bg-[hsl(var(--admin-accent))] border-[hsl(var(--admin-muted))] text-[hsl(var(--admin-foreground))]"
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Tavsif</label>
+            <label className="text-sm font-medium text-[hsl(var(--admin-foreground))]">Tavsif</label>
             <Textarea
               placeholder="Taom haqida qisqacha..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
+              className="rounded-xl bg-[hsl(var(--admin-accent))] border-[hsl(var(--admin-muted))] text-[hsl(var(--admin-foreground))]"
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Narxi (so'm) *</label>
+            <label className="text-sm font-medium text-[hsl(var(--admin-foreground))]">Narxi (so'm) *</label>
             <Input
               type="number"
               placeholder="35000"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               required
+              className="h-12 rounded-xl bg-[hsl(var(--admin-accent))] border-[hsl(var(--admin-muted))] text-[hsl(var(--admin-foreground))]"
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground flex items-center gap-2">
+            <label className="text-sm font-medium text-[hsl(var(--admin-foreground))] flex items-center gap-2">
               <Image className="w-4 h-4" />
               Rasm URL
             </label>
@@ -78,11 +81,12 @@ function FoodForm({ food, onSave, onCancel }: FoodFormProps) {
               placeholder="https://..."
               value={image}
               onChange={(e) => setImage(e.target.value)}
+              className="h-12 rounded-xl bg-[hsl(var(--admin-accent))] border-[hsl(var(--admin-muted))] text-[hsl(var(--admin-foreground))]"
             />
           </div>
 
           {image && (
-            <div className="aspect-video rounded-xl overflow-hidden bg-muted">
+            <div className="aspect-video rounded-xl overflow-hidden bg-[hsl(var(--admin-muted))]">
               <img
                 src={image}
                 alt="Preview"
@@ -95,10 +99,10 @@ function FoodForm({ food, onSave, onCancel }: FoodFormProps) {
           )}
 
           <div className="flex gap-3 pt-4">
-            <Button type="button" variant="outline" className="flex-1" onClick={onCancel}>
+            <Button type="button" variant="outline" className="flex-1 h-12 rounded-xl touch-feedback" onClick={onCancel}>
               Bekor qilish
             </Button>
-            <Button type="submit" className="flex-1">
+            <Button type="submit" className="flex-1 h-12 rounded-xl touch-feedback">
               Saqlash
             </Button>
           </div>
@@ -172,7 +176,7 @@ export default function AdminFoods() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-[hsl(var(--admin))] pb-24">
       <PageHeader title="Taomlar" />
       
       <PageContainer>
@@ -180,7 +184,7 @@ export default function AdminFoods() {
           {foods.map((food) => (
             <div
               key={food.id}
-              className="flex items-center gap-3 bg-card rounded-xl p-3 border border-border animate-fade-in"
+              className="flex items-center gap-3 bg-[hsl(var(--admin-accent))] rounded-2xl p-3 border border-[hsl(var(--admin-muted))] animate-fade-in"
             >
               {food.image && (
                 <img
@@ -190,7 +194,7 @@ export default function AdminFoods() {
                 />
               )}
               <div className="flex-1 min-w-0">
-                <h3 className="font-medium text-foreground truncate">{food.name}</h3>
+                <h3 className="font-medium text-[hsl(var(--admin-foreground))] truncate">{food.name}</h3>
                 <p className="text-sm text-primary font-semibold">
                   {food.price.toLocaleString()} so'm
                 </p>
@@ -199,7 +203,7 @@ export default function AdminFoods() {
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="h-9 w-9"
+                  className="h-10 w-10 rounded-xl text-[hsl(var(--admin-foreground))] touch-feedback"
                   onClick={() => setEditingFood(food)}
                 >
                   <Pencil className="w-4 h-4" />
@@ -207,7 +211,7 @@ export default function AdminFoods() {
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="h-9 w-9 text-destructive"
+                  className="h-10 w-10 rounded-xl text-destructive hover:bg-destructive/10 touch-feedback"
                   onClick={() => handleDelete(food.id)}
                 >
                   <Trash2 className="w-4 h-4" />
@@ -219,14 +223,14 @@ export default function AdminFoods() {
 
         {foods.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-muted-foreground">Taomlar yo'q</p>
+            <p className="text-[hsl(var(--admin-foreground)/0.6)]">Taomlar yo'q</p>
           </div>
         )}
       </PageContainer>
 
       {/* Add Button */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur-sm border-t border-border safe-bottom">
-        <Button size="lg" className="w-full" onClick={() => setIsAdding(true)}>
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-[hsl(var(--admin))/0.95] backdrop-blur-md border-t border-[hsl(var(--admin-muted))] safe-bottom">
+        <Button size="lg" className="w-full h-14 rounded-2xl touch-feedback" onClick={() => setIsAdding(true)}>
           <Plus className="w-5 h-5 mr-2" />
           Yangi taom qo'shish
         </Button>

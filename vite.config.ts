@@ -17,8 +17,8 @@ export default defineConfig(({ mode }) => ({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "apple-touch-icon.png", "pwa-icon-192.png", "pwa-icon-512.png"],
       manifest: {
-        name: "Bozorfood",
-        short_name: "Bozorfood",
+        name: "Orzubek777",
+        short_name: "Orzubek777",
         description: "Savdogarlarni tez va sifatli tushlik bilan ta'minlaymiz!",
         theme_color: "#f97316",
         background_color: "#ffffff",
